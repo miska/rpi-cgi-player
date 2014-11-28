@@ -1,13 +1,80 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta charset="UTF-8" />
   <title>TV remote</title>
+  <script src="/jquery.min.js"></script>
+  <style>
+    body {
+      background: black;
+      color: white;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    a:link, a:visited {
+      color: white;
+      background: black;
+      text-decoration: none;
+    }
+    a:hover, a:active {
+      color: black;
+      background: white;
+      text-decoration: none;
+    }
+    td {
+      vertical-align: top;
+    }
+  </style>
+<script language="JavaScript">
+<!--
+function api_request(cmd, src='') {
+$.ajax(
+     {
+      url:"/api.cgi?cmd=" + cmd + ((src.length > 0) ? ("&src=" + src) : ""),
+      success: function(result, status, xhr) {
+       $('#status').text(result);
+      }
+     }
+    )
+}
+function load_streams() {
+  $('#streams').html('Loading...');
+  $('#streams').load('/streams.cgi');
+}
+function load_files() {
+  $('#files').html('Loading...');
+  $('#files').load('/files.cgi');
+}
+//-->
+</script>
 </head>
-<body>
-<ul>
-<li><a href="/streams.cgi">Streams</a></li>
-<li><a href="/files.cgi">Files</a></li>
-<li><a href="/control.cgi">Control</a></li>
-</ul>
+<body onLoad="load_files(); load_streams();">
+<h1>TV remote control</h1>
+<h2>
+<a href="#" onClick="api_request('eject')">&#x23cf;</a>
+<a href="#" onClick="api_request('rrrr')">&#x23ea;</a>
+<a href="#" onClick="api_request('rr')">&#x23f4;</a>
+<a href="#" onClick="api_request('pause')">&#x23ef;</a>
+<a href="#" onClick="api_request('ff')">&#x23f5;</a>
+<a href="#" onClick="api_request('ffff')">&#x23e9;</a>
+<a href="#" onClick="api_request('voldown')">&#x1f509;</a>
+<a href="#" onClick="api_request('volup')">&#x1f50a;</a>
+</h2>
+<p id="status"></p>
+<table align="center">
+<tr>
+ <th onClick="load_files()">Files</th><th onClick="load_streams()">Streams</th>
+</tr>
+<tr>
+ <td id="files">
+  Loading...
+ </td>
+ <td id="streams">
+  Loading...
+ </td>
+</tr>
+</table>
 </body>
+</html>
