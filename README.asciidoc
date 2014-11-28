@@ -1,0 +1,7 @@
+Simple web to control OMXPlayer
+===============================
+
+This repository contains simple web that could be used to control OMXPlayer and
+to turn RasperryPi into Smart TV. For more details see
+
+http://michal.hrusecky.net/2014/11/me-raspberry-pi-and-old-tv/
