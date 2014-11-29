@@ -7,7 +7,8 @@ cat /srv/www/htdocs/streams/* | while read line; do
 	[ -z "$NEW_NAME" ] || NAME="$NEW_NAME"
 	URL="`echo "$line" | grep '^http'`"
 	if [ "$URL" ]; then
-		echo "<li><a href=\"#\" onClick=\"api_request('play', '$URL')\">$NAME</a></li>"
+		echo "<li><a href=\"#\" onClick=\"api_request('play', '`echo "$URL" | \
+		      base64 | tr '\n' ' ' | sed 's|[[:blank:]]*||g'`')\">$NAME</a></li>"
 	fi
 done
 echo '</ul>'

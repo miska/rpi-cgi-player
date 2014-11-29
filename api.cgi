@@ -15,11 +15,11 @@ case $cmd in
 		src="`echo "$QUERY_STRING" |
 		      sed -n 's|.*src=\([^&]*\)$|\1|p' |
 		      base64 --decode 2> /dev/null`"
-		[ -n "$cmd" ] || src="`echo "$QUERY_STRING" |
+		[ -n "$src" ] || src="`echo "$QUERY_STRING" |
 		      sed -n 's|.*src=\([^&]*\)&.*|\1|p' |
 		      base64 --decode 2> /dev/null`"
 		sub="`echo "$src" | sed -n 's|^\(/.*\)\.[^.]*$|\1.srt|p'`"
-		screen -S player -p 0 -X stuff "q"
+		screen -S player -p 0 -X stuff "q" 2> /dev/null
 		killall omxplayer
 		if [ -f "$sub" ]; then
 			screen -md -S player omxplayer \
@@ -28,8 +28,20 @@ case $cmd in
 			screen -md -S player omxplayer -b "$src"
 		fi
 		;;
+	delete)
+		src="`echo "$QUERY_STRING" |
+		      sed -n 's|.*src=\([^&]*\)$|\1|p' |
+		      base64 --decode 2> /dev/null`"
+		[ -n "$src" ] || src="`echo "$QUERY_STRING" |
+		      sed -n 's|.*src=\([^&]*\)&.*|\1|p' |
+		      base64 --decode 2> /dev/null`"
+		rm "$src"
+		;;
 	pause)
 		screen -S player -p 0 -X stuff "p"
+		;;
+	info)
+		screen -S player -p 0 -X stuff "z"
 		;;
 	ff)
 		screen -S player -p 0 -X stuff $'\e'[C
