@@ -4,14 +4,23 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta charset="UTF-8" />
   <title>TV remote</title>
-  <script src="/jquery.min.js"></script>
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic" rel="stylesheet" type="text/css" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <style>
+    @import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
     body {
       background: black;
       color: white;
+      font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     }
-    h1, h2 {
+    h1 {
       text-align: center;
+    }
+    h2 {
+      text-align: center;
+      font-weight: normal;
+      font-family: 'FontAwesome',Symbola,Verdana,Arial,sans-serif;
     }
     a:link, a:visited {
       color: white;
@@ -54,13 +63,13 @@ function load_files() {
 <h1>TV remote control</h1>
 <h2>
 <a href="#" onClick="api_request('eject')">&#x23cf;</a>
-<a href="#" onClick="api_request('rrrr')">&#x23ea;</a>
-<a href="#" onClick="api_request('rr')">&#x23f4;</a>
-<a href="#" onClick="api_request('pause')">&#x23ef;</a>
-<a href="#" onClick="api_request('ff')">&#x23f5;</a>
-<a href="#" onClick="api_request('ffff')">&#x23e9;</a>
-<a href="#" onClick="api_request('voldown')">&#x1f509;</a>
-<a href="#" onClick="api_request('volup')">&#x1f50a;</a>
+<a href="#" alt="<<"     onClick="api_request('rrrr')">&#x23ea;</a>
+<a href="#" alt="<"      onClick="api_request('rr')">&#x23f4;</a>
+<a href="#" alt="||"     onClick="api_request('pause')">&#x23ef;</a>
+<a href="#" alt=">"      onClick="api_request('ff')">&#x23f5;</a>
+<a href="#" alt=">>"     onClick="api_request('ffff')">&#x23e9;</a>
+<a href="#" alt="vol --" onClick="api_request('voldown')">&#x1f509;</a>
+<a href="#" alt="vol ++" onClick="api_request('volup')">&#x1f50a;</a>
 </h2>
 <p id="status"></p>
 <table align="center">

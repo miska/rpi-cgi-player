@@ -12,12 +12,16 @@ case $cmd in
 		killall omxplayer
 		;;
 	play)
-		src="`echo "$QUERY_STRING" |
-		      sed -n 's|.*src=\([^&]*\)$|\1|p' |
-		      base64 --decode 2> /dev/null`"
-		[ -n "$src" ] || src="`echo "$QUERY_STRING" |
-		      sed -n 's|.*src=\([^&]*\)&.*|\1|p' |
-		      base64 --decode 2> /dev/null`"
+		src="`echo "$QUERY_STRING" | \
+		      sed -n 's|.*src=\([^&]*\)$|\1|p' | \
+		      base64 --decode 2> /dev/null | tr '\n\r' '\ \ ' | \
+		      sed 's|[[:blank:]]*$||'`"
+		[ -n "$src" ] || src="`echo "$QUERY_STRING" | \
+		      sed -n 's|.*src=\([^&]*\)&.*|\1|p' | \
+		      base64 --decode 2> /dev/null | tr '\n\r' '\ \ ' | \
+		      sed 's|[[:blank:]]*$||'`"
+		[ -n "$src" ] || src="`echo "$QUERY_STRING" | \
+		      sed -n 's|.*src=\([^&]*\)&.*|\1|p'`"
 		sub="`echo "$src" | sed -n 's|^\(/.*\)\.[^.]*$|\1.srt|p'`"
 		screen -S player -p 0 -X stuff "q" 2> /dev/null
 		killall omxplayer
