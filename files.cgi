@@ -4,8 +4,8 @@ echo
 cd "$HOME"
 [ "$TMP" ] || TMP="/tmp"
 CACHE="$TMP"/rpi_player_filelist
-NEWCACHE="`mktemp`"
 if [ \! -r "$CACHE" ] || [ Movies -nt "$CACHE" ]; then 
+NEWCACHE="`mktemp`"
 echo '<ul>' > "$NEWCACHE"
 ls -1 "Movies"/* | while read line; do
 	NAME="`basename "$line"`"
