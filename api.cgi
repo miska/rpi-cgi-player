@@ -61,7 +61,11 @@ case $cmd in
 		      sed -n 's|.*src=\([^&]*\)&.*|\1|p' |
 		      base64 --decode 2> /dev/null`"
 		cd Movies
-		screen -md wget -c "$src"
+		if [ "`curl -I "$src" 2> /dev/null | grep "Content-Type:.*text.*"`" ]; then
+			screen -md youtube-dl "$src"
+		else
+			screen -md wget -c "$src"
+		fi
 		;;
 	pause)
 		if [ "$PLAYER" = omx ]; then
@@ -121,6 +125,7 @@ case $cmd in
 		;;
 	show_downloads)
 		OUT="`ps -C wget -o args | sed -n 's|wget -c |<br/>|p'`"
+		OUT="$OUT`ps -axo args | sed -n 's|.*python.*youtube-dl |<br/>|p' | grep http`"
 		if [ "$OUT" ]; then
 			echo "<strong>Currently downloading</strong>"
 			echo "$OUT"
