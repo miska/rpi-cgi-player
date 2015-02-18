@@ -13,6 +13,7 @@
       background: black;
       color: white;
       font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+      text-align: center;
     }
     h1 {
       text-align: center;
@@ -27,18 +28,35 @@
       background: black;
       text-decoration: none;
     }
-    a:hover, a:active {
+    li a:hover, li a:active {
       color: black;
       background: white;
       text-decoration: none;
     }
-    td {
-      vertical-align: top;
+    img {
+      heigt: 100%;
+    }
+    .equi img {
+      width: 50%;
+    }
+    .lists {
+      width: 90%;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .equi {
+      vertical-align: center;
+      horizontal-align: center;
+      width: 10%;
     }
   </style>
 <script language="JavaScript">
 <!--
-function api_request(cmd, src='') {
+function api_request(cmd, src) {
+if(typeof src == 'undefined') {
+    src='';
+}
+
 $.ajax(
      {
       url:"/api.cgi?cmd=" + cmd + ((src.length > 0) ? ("&src=" + src) : ""),
@@ -48,42 +66,68 @@ $.ajax(
      }
     )
 }
+
 function load_streams() {
-  $('#streams').html('Loading...');
   $('#streams').load('/streams.cgi');
 }
+
 function load_files() {
-  $('#files').html('Loading...');
   $('#files').load('/files.cgi');
+  $('#size').load('/api.cgi?cmd=df');
+  $('#downloads').load('/api.cgi?cmd=show_downloads');
 }
+
+setInterval(function(){ load_files(); load_streams(); }, 5000);
+
+var images = new Array();
+function preload(arg) {
+	for (i = 0; i < arg.length; i++) {
+		images[i] = new Image()
+		images[i].src = arg[i]
+	}
+}
+var cache = ["font/eject-high.svg", "font/rrrr-high.svg", "font/rr-high.svg", "font/pause-high.svg", "font/ff-high.svg", "font/ffff-high.svg", "font/vol--high.svg", "font/vol+-high.svg"];
 //-->
 </script>
 </head>
-<body onLoad="load_files(); load_streams();">
+<body onLoad="$('#streams').hide(); load_files(); load_streams(); preload(cache)">
 <h1>TV remote control</h1>
-<h2>
-<a href="#" onClick="api_request('eject')">&#x23cf;</a>
-<a href="#" alt="<<"     onClick="api_request('rrrr')">&#x23ea;</a>
-<a href="#" alt="<"      onClick="api_request('rr')">&#x23f4;</a>
-<a href="#" alt="||"     onClick="api_request('pause')">&#x23ef;</a>
-<a href="#" alt=">"      onClick="api_request('ff')">&#x23f5;</a>
-<a href="#" alt=">>"     onClick="api_request('ffff')">&#x23e9;</a>
-<a href="#" alt="vol --" onClick="api_request('voldown')">&#x1f509;</a>
-<a href="#" alt="vol ++" onClick="api_request('volup')">&#x1f50a;</a>
-</h2>
-<p id="status"></p>
-<table align="center">
-<tr>
- <th onClick="load_files()">Files</th><th onClick="load_streams()">Streams</th>
-</tr>
-<tr>
- <td id="files">
-  Loading...
- </td>
- <td id="streams">
-  Loading...
- </td>
+<table align="center" style="width: 90%; padding: 10px;">
+<tr style="width: 90%;">
+<td class="equi">
+<a href="#" alt="eject"  onClick="api_request('eject')">    <img onmouseover="this.src='font/eject-high.svg';" onmouseout="this.src='font/eject.svg';" src="font/eject.svg"/>
+</td><td class="equi">
+<a href="#" alt="<<"     onClick="api_request('rrrr')">     <img onmouseover="this.src='font/rrrr-high.svg';"  onmouseout="this.src='font/rrrr.svg';"  src="font/rrrr.svg"/>
+</td><td class="equi">
+<a href="#" alt="<"      onClick="api_request('rr')">       <img onmouseover="this.src='font/rr-high.svg';"    onmouseout="this.src='font/rr.svg';"    src="font/rr.svg"/>
+</td><td class="equi">
+<a href="#" alt="||"     onClick="api_request('pause')">    <img onmouseover="this.src='font/pause-high.svg';" onmouseout="this.src='font/pause.svg';" src="font/pause.svg"/></a>
+</td><td class="equi">
+<a href="#" alt=">"      onClick="api_request('ff')">       <img onmouseover="this.src='font/ff-high.svg';"    onmouseout="this.src='font/ff.svg';"    src="font/ff.svg"/>
+</td><td class="equi">
+<a href="#" alt=">>"     onClick="api_request('ffff')">     <img onmouseover="this.src='font/ffff-high.svg';"  onmouseout="this.src='font/ffff.svg';"  src="font/ffff.svg"/>
+</td><td class="equi">
+<a href="#" alt="vol --" onClick="api_request('voldown')">  <img onmouseover="this.src='font/vol--high.svg';"  onmouseout="this.src='font/vol-.svg';"  src="font/vol-.svg"/>
+</td><td class="equi">
+<a href="#" alt="vol ++" onClick="api_request('volup')">    <img onmouseover="this.src='font/vol+-high.svg';"  onmouseout="this.src='font/vol+.svg';"  src="font/vol+.svg"/>
+</td>
 </tr>
 </table>
+<p style="width: 90%; margin: 0 auto;" id="status"></p>
+<p style="width: 90%; margin: 0 auto;"><input type="text" id="download" style="width: 80%"/> <input style="width: 15%; min-width: 100px;" type="button" onClick="api_request('download',btoa($('#download').val())); $('#download').val(''); load_files()" value="Download"/></p>
+<p style="width: 90%; margin: 0 auto;" id="downloads"></p>
+<table align="center" style="width: 90%; margin-top: 1em;">
+<tr>
+ <th style="width: 50%" onClick="load_files(); $('#files').show(); $('#streams').hide()">Files <em id="size" style="font-weight: normal"></em></th><th style="width: 50%" onClick="load_streams(); $('#files').hide(); $('#streams').show()">Streams</th>
+</tr>
+</table>
+<div class="lists">
+ <p id="files">
+  Loading...
+ </p>
+ <p id="streams">
+  Loading...
+ </p>
+</div>
 </body>
 </html>

@@ -1,7 +1,10 @@
 #!/bin/bash
 echo 'Content-type: text/html'
 echo
-echo '<ul>'
+[ "$TMP" ] || TMP="/tmp"
+CACHE="$TMP"/rpi_player_streamlist
+if [ \! -r "$CACHE" ] || [ Movies -nt "$CACHE" ]; then
+echo '<ul>' > "$CACHE"
 cat /srv/www/htdocs/streams/* | while read line; do
 	NEW_NAME="`echo "$line" | sed -n 's|#EXTINF:,||p'`"
 	[ -z "$NEW_NAME" ] || NAME="$NEW_NAME"
@@ -11,5 +14,7 @@ cat /srv/www/htdocs/streams/* | while read line; do
 		base64 | tr '\n' ' ' | sed 's|[[:blank:]]*||g'`')\">$NAME</a></li>"
 	fi
 	URL=""
-done
-echo '</ul>'
+done >> "$CACHE"
+echo '</ul>' >> "$CACHE"
+fi
+cat "$CACHE"
