@@ -4,6 +4,8 @@ Content-type: text/txt
 
 EOF
 cd "$HOME"
+PLAYER="omx"
+SUDO=""
 [ -n "$QUERY_STRING" ] || read QUERY_STRING
 cmd="`echo "$QUERY_STRING" | sed -n 's|.*cmd=\([^&]*\)$|\1|p'`"
 [ -n "$cmd" ] || cmd="`echo "$QUERY_STRING" | sed -n 's|.*cmd=\([^&]*\)[&].*|\1|p'`"
@@ -11,6 +13,7 @@ case $cmd in
 	eject)
 		screen -S player -p 0 -X stuff "q" > /dev/null 2> /dev/null
 		killall omxplayer > /dev/null 2> /dev/null
+		$SUDO killall mpv > /dev/null 2> /dev/null
 		;;
 	play)
 		src="`echo "$QUERY_STRING" | \
@@ -24,13 +27,21 @@ case $cmd in
 		[ -n "$src" ] || src="`echo "$QUERY_STRING" | \
 		      sed -n 's|.*src=\([^&]*\)&.*|\1|p'`"
 		sub="`echo "$src" | sed -n 's|^\(/.*\)\.[^.]*$|\1.srt|p'`"
-		screen -S player -p 0 -X stuff "q" 2> /dev/null > /dev/null
-		killall omxplayer > /dev/null 2> /dev/null
-		if [ -f "$sub" ]; then
-			screen -md -S player omxplayer --lines 5 \
-			--align center --subtitles "$sub" -b "$src"
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff "q" 2> /dev/null > /dev/null
+			killall omxplayer > /dev/null 2> /dev/null
+			if [ -f "$sub" ]; then
+				screen -md -S player omxplayer --lines 5 \
+				--align center --subtitles "$sub" -b "$src"
+			else
+				screen -md -S player omxplayer -b "$src"
+			fi
 		else
-			screen -md -S player omxplayer -b "$src"
+			screen -S player -p 0 -X stuff "q" 2> /dev/null
+			$SUDO killall mpv
+			rm -f /tmp/mpv
+			mkfifo /tmp/mpv
+			screen -md -S player $SUDO /usr/bin/xinit /usr/bin/mpv -fs --input-file=/tmp/mpv "$src"
 		fi
 		;;
 	delete)
@@ -53,28 +64,56 @@ case $cmd in
 		screen -md wget -c "$src"
 		;;
 	pause)
-		screen -S player -p 0 -X stuff "p"
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff "p"
+		else
+			echo cycle pause > /tmp/mpv
+		fi
 		;;
 	info)
 		screen -S player -p 0 -X stuff "z"
 		;;
 	ff)
-		screen -S player -p 0 -X stuff $'\e'[C
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff $'\e'[C
+		else
+			echo seek +60 > /tmp/mpv
+		fi
 		;;
 	ffff)
-		screen -S player -p 0 -X stuff $'\e'[A
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff $'\e'[A
+		else
+			echo seek +600 > /tmp/mpv
+		fi
 		;;
 	rr)
-		screen -S player -p 0 -X stuff $'\e'[D
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff $'\e'[D
+		else
+			echo seek -60 > /tmp/mpv
+		fi
 		;;
 	rrrr)
-		screen -S player -p 0 -X stuff $'\e'[B
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff $'\e'[B
+		else
+			echo seek -600 > /tmp/mpv
+		fi
 		;;
 	volup)
-		screen -S player -p 0 -X stuff "+"
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff "+"
+		else
+			echo add volume 1 > /tmp/mpv
+		fi
 		;;
 	voldown)
-		screen -S player -p 0 -X stuff "-"
+		if [ "$PLAYER" = omx ]; then
+			screen -S player -p 0 -X stuff "-"
+		else
+			echo add volume -1 > /tmp/mpv
+		fi
 		;;
 	df)
 		df -h --output=avail,size Movies | tail -n 1 | sed -n 's|^[[:blank:]]*\([^[:blank:]]\+\)[[:blank:]]*|\1 free out of |p'
