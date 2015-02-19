@@ -1,11 +1,17 @@
 #!/bin/bash
 echo 'Content-type: text/html'
 echo
-cd "$HOME"
+cd /home/michal
 [ "$TMP" ] || TMP="/tmp"
 CACHE="$TMP"/rpi_player_filelist
 if [ \! -r "$CACHE" ] || [ Movies -nt "$CACHE" ]; then 
-NEWCACHE="`mktemp`"
+rm -f /tmp/tmp.*
+NEWCACHE="$TMP"/rpi_player_filelist.new
+if [ -r "$NEWCACHE" ]; then
+	echo "Loading ..."
+	exit 0
+fi
+touch "$TMP"/rpi_player_filelist.new.ts
 echo '<ul>' > "$NEWCACHE"
 ls -1 "Movies"/* | while read line; do
 	NAME="`basename "$line"`"
@@ -18,6 +24,7 @@ ls -1 "Movies"/* | while read line; do
 done >> "$NEWCACHE"
 echo '</ul>' >> "$NEWCACHE"
 cat "$NEWCACHE" > "$CACHE"
-rm -f "$NEWCACHE"
+touch -r "$TMP"/rpi_player_filelist.new.ts "$CACHE"
+rm -f "$NEWCACHE" "$TMP"/rpi_player_filelist.new.ts
 fi
 cat "$CACHE"
